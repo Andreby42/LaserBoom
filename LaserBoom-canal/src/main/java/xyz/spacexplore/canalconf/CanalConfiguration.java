@@ -44,6 +44,8 @@ public class CanalConfiguration {
 	private String zkMysqlUser;
 	@Value("${canal.zkServer.mysql.password}")
 	private String zkMysqlPasswd;
+	@Value("${canal.poolsize}")
+	private String poolSize;
 
 	@Bean(value = "canalConnector")
 	public CanalConnector canalConnector() {
@@ -54,7 +56,7 @@ public class CanalConfiguration {
 			if (socketAddress != null && socketAddress.size() > 1) {
 				canalConnector = CanalConnectors.newClusterConnector(socketAddress, sDestination.trim(),
 						sMysqlUser.trim(), sMysqlPasswd.trim());
-			} else {
+			} else if (socketAddress != null && socketAddress.size() == 1) {
 				canalConnector = CanalConnectors.newSingleConnector(socketAddress.get(0), sDestination.trim(),
 						sMysqlUser.trim(), sMysqlPasswd.trim());
 			}
@@ -69,7 +71,11 @@ public class CanalConfiguration {
 
 	@Bean("executorService")
 	public ExecutorService executorService() {
-		return Executors.newFixedThreadPool(Constants.DEFAULT_THREAD_POOL_SIZE);
+		if (StringUtils.isEmpty(poolSize.trim())) {
+			return Executors.newFixedThreadPool(Constants.DEFAULT_THREAD_POOL_SIZE);
+		} else {
+			return Executors.newFixedThreadPool(Integer.valueOf(poolSize));
+		}
 	}
 
 	@Bean(value = "canalClient")

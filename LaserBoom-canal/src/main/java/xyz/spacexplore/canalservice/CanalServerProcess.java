@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import xyz.spacexplore.canalclient.CanalClient;
 
-@Service("canalService")
-public class CanalServiceImpl implements CanalService {
+@Service("canalServer")
+public class CanalServerProcess implements CanalServer {
 	@Resource
 	private CanalClient canalClient;
 
