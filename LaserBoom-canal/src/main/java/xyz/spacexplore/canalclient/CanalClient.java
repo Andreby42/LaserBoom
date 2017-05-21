@@ -2,6 +2,8 @@ package xyz.spacexplore.canalclient;
 
 import java.util.List;
 
+import org.springframework.util.Assert;
+
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.protocol.CanalEntry.Entry;
 import com.alibaba.otter.canal.protocol.Message;
@@ -57,6 +59,7 @@ public class CanalClient {
 
 	public void start() {
 		running = true;
+		Assert.notNull(canalConnector, "connector is null");
 		executorService.submit(new Runnable() {
 			@Override
 			public void run() {

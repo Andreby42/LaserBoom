@@ -4,12 +4,18 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import xyz.spacexplore.canalclient.CanalClient;
 
 @Service("canalServer")
 public class CanalServerProcess implements CanalServer {
+
+	private static final Logger logger = LoggerFactory.getLogger(CanalServerProcess.class);
+
 	@Resource
 	private CanalClient canalClient;
 
@@ -28,9 +34,9 @@ public class CanalServerProcess implements CanalServer {
 				try {
 					canalClient.stop();
 				} catch (Throwable e) {
-					// do someting
+					logger.warn("##something goes wrong when stopping canal:\n{}", ExceptionUtils.getFullStackTrace(e));
 				} finally {
-					// do something
+					logger.info("## canal client is down.");
 				}
 			}
 

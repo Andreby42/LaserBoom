@@ -6,12 +6,30 @@
 		<artifactId>LaserBoom</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>LaserBoom-redis</artifactId>
+	<artifactId>LaserBoom-cache</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>xyz.spacexplore</groupId>
 			<artifactId>LaserBoom-rabbit</artifactId>
-			<version>${parent.version}</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<!-- redis -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+			<version>1.8.3.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>2.9.0</version>
+		</dependency>
+		<!-- solr -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-solr</artifactId>
+			<version>2.1.3.RELEASE</version>
+		</dependency>
+
 	</dependencies>
 </project>

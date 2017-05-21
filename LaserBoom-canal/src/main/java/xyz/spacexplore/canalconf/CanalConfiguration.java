@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.otter.canal.client.CanalConnector;
@@ -25,7 +26,7 @@ import xyz.spacexplore.support.CanalMessagePublisher;
 import xyz.spacexplore.support.Constants;
 
 @Configuration
-@PropertySource("classpath:canal.properties")
+@PropertySource("classpath*:canal.properties")
 public class CanalConfiguration {
 	@Value("${canal.sockets}")
 	private String sockets;
@@ -50,28 +51,27 @@ public class CanalConfiguration {
 	@Bean(value = "canalConnector")
 	public CanalConnector canalConnector() {
 		CanalConnector canalConnector = null;
-		if (!StringUtils.isEmpty(sockets.trim()) || !StringUtils.isEmpty(sDestination.trim())
-				|| !StringUtils.isEmpty(sMysqlUser) || !StringUtils.isEmpty(sMysqlPasswd)) {
+		if (!StringUtils.isEmpty(sockets) || !StringUtils.isEmpty(sDestination) || !StringUtils.isEmpty(sMysqlUser)
+				|| !StringUtils.isEmpty(sMysqlPasswd)) {
 			List<SocketAddress> socketAddress = socketAddress();
-			if (socketAddress != null && socketAddress.size() > 1) {
-				canalConnector = CanalConnectors.newClusterConnector(socketAddress, sDestination.trim(),
-						sMysqlUser.trim(), sMysqlPasswd.trim());
+			if (!CollectionUtils.isEmpty(socketAddress)) {
+				canalConnector = CanalConnectors.newClusterConnector(socketAddress, sDestination, sMysqlUser,
+						sMysqlPasswd);
 			} else if (socketAddress != null && socketAddress.size() == 1) {
-				canalConnector = CanalConnectors.newSingleConnector(socketAddress.get(0), sDestination.trim(),
-						sMysqlUser.trim(), sMysqlPasswd.trim());
+				canalConnector = CanalConnectors.newSingleConnector(socketAddress.get(0), sDestination, sMysqlUser,
+						sMysqlPasswd);
 			}
 		}
-		if (!StringUtils.isEmpty(zkServer.trim()) || !StringUtils.isEmpty(zkDestination.trim())
-				|| !StringUtils.isEmpty(zkMysqlUser.trim()) || !StringUtils.isEmpty(zkMysqlPasswd.trim())) {
-			canalConnector = CanalConnectors.newClusterConnector(zkServer.trim(), zkDestination.trim(),
-					zkMysqlUser.trim(), zkMysqlPasswd.trim());
+		if (!StringUtils.isEmpty(zkServer) || !StringUtils.isEmpty(zkDestination) || !StringUtils.isEmpty(zkMysqlUser)
+				|| !StringUtils.isEmpty(zkMysqlPasswd)) {
+			canalConnector = CanalConnectors.newClusterConnector(zkServer, zkDestination, zkMysqlUser, zkMysqlPasswd);
 		}
 		return canalConnector;
 	}
 
 	@Bean("executorService")
 	public ExecutorService executorService() {
-		if (StringUtils.isEmpty(poolSize.trim())) {
+		if (StringUtils.isEmpty(poolSize)) {
 			return Executors.newFixedThreadPool(Constants.DEFAULT_THREAD_POOL_SIZE);
 		} else {
 			return Executors.newFixedThreadPool(Integer.valueOf(poolSize));
@@ -83,7 +83,7 @@ public class CanalConfiguration {
 			@Qualifier(value = "canalConnector") CanalConnector canalConnector,
 			@Qualifier(value = "canalMessagePublisher") CanalMessagePublisher canalMessagePublisher) {
 
-		Assert.isTrue(canalConnector != null, "CanalConnector cant be null");
+		Assert.isTrue(canalConnector != null, "CanalConnector can't be null");
 
 		ListeningExecutorService service = MoreExecutors.listeningDecorator(executorService);
 		CanalClient canalClient = new CanalClient(service, canalConnector, canalMessagePublisher);
@@ -95,10 +95,12 @@ public class CanalConfiguration {
 		List<SocketAddress> list = new ArrayList<>();
 		if (!StringUtils.isEmpty(sockets)) {
 			String[] addrs = sockets.split(Constants.COMMA_SEPARATOR);
-			for (String addr : addrs) {
-				String serverUrl = addr.trim().substring(0, addr.trim().lastIndexOf(Constants.SEMICOLON_SEPARATOR));
-				String port = addr.trim().substring(addr.trim().lastIndexOf(Constants.SEMICOLON_SEPARATOR) + 1);
-				list.add(new InetSocketAddress(serverUrl, Integer.valueOf(port)));
+			if (null != addrs) {
+				for (String addr : addrs) {
+					String serverUrl = addr.substring(0, addr.lastIndexOf(Constants.SEMICOLON_SEPARATOR));
+					String port = addr.substring(addr.lastIndexOf(Constants.SEMICOLON_SEPARATOR) + 1);
+					list.add(new InetSocketAddress(serverUrl, Integer.valueOf(port)));
+				}
 			}
 		}
 		return list;
