@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service("redisCacheHandler")
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class RedisCacheHandler implements Cache {
+public class RedisCacheHandler implements CacheHandler {
 	@Resource
 	protected RedisTemplate redisTemplate;
 

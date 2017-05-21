@@ -2,7 +2,7 @@ package xyz.spacexplore.cache;
 
 import java.util.List;
 
-public interface Cache {
+public interface CacheHandler {
 
 	public <T> void add(List<CacheDTO<T>> list);
 
