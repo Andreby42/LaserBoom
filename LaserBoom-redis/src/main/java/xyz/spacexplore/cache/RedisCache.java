@@ -11,29 +11,58 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service("redisCache")
+@SuppressWarnings({"rawtypes","unchecked"})
 public class RedisCache implements Cache {
-	@SuppressWarnings("rawtypes")
 	@Resource
 	protected RedisTemplate redisTemplate;
 
-	/**
-	 * 
-	 * @doc:pipelineSet方法
-	 * @author Andreby
-	 * @date 2017年5月21日 下午6:59:51
-	 * @param key
-	 * @param value
-	 */
-	@SuppressWarnings("unchecked")
-	public void pipelineSet(String key, Object value) {
-		final byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
-		final byte[] rawValue = redisTemplate.getValueSerializer().serialize(value);
+	@Override
+	public <T> void add(final List<CacheDTO<T>> list) {
 		RedisCallback<List<Object>> pipelineCallback = new RedisCallback<List<Object>>() {
-
 			@Override
 			public List<Object> doInRedis(RedisConnection connection) throws DataAccessException {
 				connection.openPipeline();
-				connection.set(rawKey, rawValue);
+				for (CacheDTO<T> cacheDTO : list) {
+					byte[] rawKey = redisTemplate.getKeySerializer().serialize(cacheDTO.getKey());
+					byte[] rawValue = redisTemplate.getValueSerializer().serialize(cacheDTO.getValue());
+					connection.setNX(rawKey, rawValue);
+				}
+				return connection.closePipeline();
+			}
+
+		};
+		redisTemplate.execute(pipelineCallback);
+
+	}
+
+	@Override
+	public <T> void update(final List<CacheDTO<T>> list) {
+		RedisCallback<List<Object>> pipelineCallback = new RedisCallback<List<Object>>() {
+			@Override
+			public List<Object> doInRedis(RedisConnection connection) throws DataAccessException {
+				connection.openPipeline();
+				for (CacheDTO<T> cacheDTO : list) {
+					byte[] rawKey = redisTemplate.getKeySerializer().serialize(cacheDTO.getKey());
+					byte[] rawValue = redisTemplate.getValueSerializer().serialize(cacheDTO.getValue());
+					connection.set(rawKey, rawValue);
+				}
+				return connection.closePipeline();
+			}
+
+		};
+		redisTemplate.execute(pipelineCallback);
+	}
+
+	@Override
+	public void delete(final List<Object> list) {
+		RedisCallback<List<Object>> pipelineCallback = new RedisCallback<List<Object>>() {
+			@Override
+			public List<Object> doInRedis(RedisConnection connection) throws DataAccessException {
+				connection.openPipeline();
+				for (Object obj : list) {
+					byte[] rawKey = redisTemplate.getKeySerializer().serialize(obj);
+					connection.del(rawKey);
+				}
 				return connection.closePipeline();
 			}
 
