@@ -31,13 +31,12 @@
         p:timeout="${redis.timeout}"
         p:password="${redis.password}"
         p:pool-config-ref="poolConfig"
-        p:usePool="true"
-        />
+        p:usePool="true"/>
+        
         
      <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">  
         <property name="connectionFactory"   ref="connectionFactory" />
         <property name="keySerializer"> <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/></property>
         <property name="valueSerializer"> <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/></property>
-    	
     </bean> 
 </beans>

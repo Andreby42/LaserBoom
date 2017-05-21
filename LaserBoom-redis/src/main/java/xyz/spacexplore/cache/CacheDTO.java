@@ -2,6 +2,9 @@ package xyz.spacexplore.cache;
 
 import java.io.Serializable;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  * 
  * @doc:用于redis 存储对象
@@ -9,6 +12,8 @@ import java.io.Serializable;
  * @date 2017年5月21日 下午7:50:18
  * @param <T>
  */
+@Component
+@Scope("prototype")
 public class CacheDTO<T> implements Serializable {
 	private static final long serialVersionUID = -5479965679484004667L;
 
@@ -16,10 +21,21 @@ public class CacheDTO<T> implements Serializable {
 
 	private T value;
 
-	public CacheDTO(Object key, T value) {
+	private int dbIndex;
+
+	public CacheDTO(Object key, T value, int dbIndex) {
 		super();
 		this.key = key;
 		this.value = value;
+		this.dbIndex = dbIndex;
+	}
+
+	public int getDbIndex() {
+		return dbIndex;
+	}
+
+	public void setDbIndex(int dbIndex) {
+		this.dbIndex = dbIndex;
 	}
 
 	public Object getKey() {
@@ -42,6 +58,7 @@ public class CacheDTO<T> implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + dbIndex;
 		result = prime * result + ((key == null) ? 0 : key.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
@@ -56,6 +73,8 @@ public class CacheDTO<T> implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		CacheDTO<?> other = (CacheDTO<?>) obj;
+		if (dbIndex != other.dbIndex)
+			return false;
 		if (key == null) {
 			if (other.key != null)
 				return false;
@@ -71,7 +90,7 @@ public class CacheDTO<T> implements Serializable {
 
 	@Override
 	public String toString() {
-		return "CacheDTO [key=" + key + ", value=" + value + "]";
+		return "CacheDTO [key=" + key + ", value=" + value + ", dbIndex=" + dbIndex + "]";
 	}
 
 }

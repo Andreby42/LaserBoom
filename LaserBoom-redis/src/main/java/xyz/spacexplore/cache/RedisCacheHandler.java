@@ -10,9 +10,9 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-@Service("redisCache")
-@SuppressWarnings({"rawtypes","unchecked"})
-public class RedisCache implements Cache {
+@Service("redisCacheHandler")
+@SuppressWarnings({ "rawtypes", "unchecked" })
+public class RedisCacheHandler implements Cache {
 	@Resource
 	protected RedisTemplate redisTemplate;
 
@@ -23,6 +23,7 @@ public class RedisCache implements Cache {
 			public List<Object> doInRedis(RedisConnection connection) throws DataAccessException {
 				connection.openPipeline();
 				for (CacheDTO<T> cacheDTO : list) {
+					connection.select(cacheDTO.getDbIndex());
 					byte[] rawKey = redisTemplate.getKeySerializer().serialize(cacheDTO.getKey());
 					byte[] rawValue = redisTemplate.getValueSerializer().serialize(cacheDTO.getValue());
 					connection.setNX(rawKey, rawValue);
@@ -42,6 +43,8 @@ public class RedisCache implements Cache {
 			public List<Object> doInRedis(RedisConnection connection) throws DataAccessException {
 				connection.openPipeline();
 				for (CacheDTO<T> cacheDTO : list) {
+					// TODO:添加index
+					connection.select(cacheDTO.getDbIndex());
 					byte[] rawKey = redisTemplate.getKeySerializer().serialize(cacheDTO.getKey());
 					byte[] rawValue = redisTemplate.getValueSerializer().serialize(cacheDTO.getValue());
 					connection.set(rawKey, rawValue);
@@ -54,13 +57,15 @@ public class RedisCache implements Cache {
 	}
 
 	@Override
-	public void delete(final List<Object> list) {
+	public <T> void delete(final List<CacheDTO<T>> list) {
 		RedisCallback<List<Object>> pipelineCallback = new RedisCallback<List<Object>>() {
 			@Override
 			public List<Object> doInRedis(RedisConnection connection) throws DataAccessException {
+				// TODO:添加index
 				connection.openPipeline();
-				for (Object obj : list) {
-					byte[] rawKey = redisTemplate.getKeySerializer().serialize(obj);
+				for (CacheDTO cacheDTO : list) {
+					connection.select(cacheDTO.getDbIndex());
+					byte[] rawKey = redisTemplate.getKeySerializer().serialize(cacheDTO.getKey());
 					connection.del(rawKey);
 				}
 				return connection.closePipeline();
@@ -69,4 +74,5 @@ public class RedisCache implements Cache {
 		};
 		redisTemplate.execute(pipelineCallback);
 	}
+
 }

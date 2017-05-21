@@ -8,6 +8,6 @@ public interface Cache {
 
 	public <T> void update(List<CacheDTO<T>> list);
 
-	public void delete(List<Object> list);
+	public <T> void delete(List<CacheDTO<T>> list);
 
 }
