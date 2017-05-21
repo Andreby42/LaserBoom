@@ -43,7 +43,6 @@ public class RedisCacheHandler implements CacheHandler {
 			public List<Object> doInRedis(RedisConnection connection) throws DataAccessException {
 				connection.openPipeline();
 				for (CacheDTO<T> cacheDTO : list) {
-					// TODO:添加index
 					connection.select(cacheDTO.getDbIndex());
 					byte[] rawKey = redisTemplate.getKeySerializer().serialize(cacheDTO.getKey());
 					byte[] rawValue = redisTemplate.getValueSerializer().serialize(cacheDTO.getValue());
@@ -61,7 +60,6 @@ public class RedisCacheHandler implements CacheHandler {
 		RedisCallback<List<Object>> pipelineCallback = new RedisCallback<List<Object>>() {
 			@Override
 			public List<Object> doInRedis(RedisConnection connection) throws DataAccessException {
-				// TODO:添加index
 				connection.openPipeline();
 				for (CacheDTO cacheDTO : list) {
 					connection.select(cacheDTO.getDbIndex());
