@@ -92,6 +92,7 @@ public class CustomCanalClient {
 		while (running) {
 			try {
 				connector.connect();
+				logger.info("cannal 成功链接上了");
 				connector.subscribe("");
 				while (running) {
 					Message message = connector.getWithoutAck(Constants.CanalConf.CANAL_DEFAULT_BATCHSIZE); // 获取指定数量的数据

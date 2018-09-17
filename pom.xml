@@ -6,7 +6,7 @@
 	<groupId>xyz.spacexplore</groupId>
 	<artifactId>LaserBoom</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<name>LaserBoom</name>
 	<description>LaserBoom</description>
