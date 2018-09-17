@@ -1,48 +1,25 @@
 /target/
-/.classpath
-/.project
-/.springBeans
-# Compiled class file
-*.class
+!.mvn/wrapper/maven-wrapper.jar
 
-# Log file
-*.log
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
 
-# BlueJ files
-*.ctxt
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-.settings/org.eclipse.m2e.core.prefs
-LaserBoom-redis/.springBeans
-*.springBeans
-.settings/org.eclipse.core.resources.prefs
-LaserBoom-canal/.settings/org.eclipse.core.resources.prefs
-LaserBoom-canal/.classpath
-LaserBoom-rabbit/.gitignore
-LaserBoom-canal/.settings/org.eclipse.jdt.core.prefs
-LaserBoom-canal/.gitignore
-LaserBoom-rabbit/.project
-LaserBoom-canal/.settings/org.eclipse.m2e.core.prefs
-LaserBoom-canal/.project
-LaserBoom-rabbit/.classpath
-LaserBoom-rabbit/.settings/org.eclipse.jdt.core.prefs
-LaserBoom-rabbit/.settings/org.eclipse.core.resources.prefs
-LaserBoom-rabbit/.settings/org.eclipse.m2e.core.prefs
-LaserBoom-redis/.settings/org.eclipse.core.resources.prefs
-LaserBoom-redis/.classpath
-LaserBoom-redis/.gitignore
-LaserBoom-redis/.settings/org.eclipse.jdt.core.prefs
-LaserBoom-redis/.project
-LaserBoom-redis/.settings/org.eclipse.m2e.core.prefs
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
