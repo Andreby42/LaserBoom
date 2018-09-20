@@ -10,34 +10,34 @@ import org.springframework.stereotype.Service;
 
 @Service("canalService")
 public class CanalServiceProcess implements CanalService {
-    private static final Logger logger = LoggerFactory.getLogger(CanalServiceProcess.class);
+	private static final Logger logger = LoggerFactory.getLogger(CanalServiceProcess.class);
 
-    @Resource
-    private CustomCanalClient canalClient;
+	// @Resource
+	private CustomCanalClient canalClient;
 
-    @Override
-    // @PostConstruct
-    public void initCanalService() {
-        canalClient.start();
-    }
+	@Override
+	// @PostConstruct
+	public void initCanalService() {
+		canalClient.start();
+	}
 
-    @Override
-    // @PreDestroy
-    public void destroyCanalService() {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                try {
-                    logger.info("## stop the canal client");
-                    canalClient.stop();
-                    System.out.println("canal client is stopping");
-                } catch (Throwable e) {
-                    logger.warn("##something goes wrong when stopping canal:\n{}", ExceptionUtils.getFullStackTrace(e));
-                } finally {
-                    logger.info("## canal client is down.");
-                    System.out.println("canal client is down");
-                }
-            }
-        });
-    }
+	@Override
+	// @PreDestroy
+	public void destroyCanalService() {
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				try {
+					logger.info("## stop the canal client");
+					canalClient.stop();
+					System.out.println("canal client is stopping");
+				} catch (Throwable e) {
+					logger.warn("##something goes wrong when stopping canal:\n{}", ExceptionUtils.getFullStackTrace(e));
+				} finally {
+					logger.info("## canal client is down.");
+					System.out.println("canal client is down");
+				}
+			}
+		});
+	}
 
 }

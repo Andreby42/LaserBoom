@@ -11,6 +11,8 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -42,6 +44,7 @@ public class CanalConfiguration extends BaseLogger {
 
 
     @Bean(value = "canalConnector")
+    @ConditionalOnExpression(value="false")
     public CanalConnector canalConnector() {
         String zkAddr = "";
         String zkInstanceName = "";
@@ -90,6 +93,7 @@ public class CanalConfiguration extends BaseLogger {
     }
 
     @Bean(value = "canalClient")
+    @ConditionalOnExpression(value="false")
     public CustomCanalClient canalClient(@Qualifier("canalConnector") CanalConnector canalConnector, @Qualifier("canalServicePublisher") CanalServicePublisher canalServicePublisher, @Qualifier("executorService") ExecutorService executorService) {
         ListeningExecutorService listeningExecutorService = MoreExecutors.listeningDecorator(executorService);
         String instancename = env.getProperty(Constants.CanalConf.CANAL_INSTANCENAME_KEY);
