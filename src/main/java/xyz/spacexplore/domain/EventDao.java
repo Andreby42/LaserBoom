@@ -1,6 +1,8 @@
 package xyz.spacexplore.domain;
 
-import xyz.spacexplore.domain.EventDTO;
+import java.util.List;
+
+import xyz.spacexplore.domain.dto.EventDTO;
 
 public interface EventDao {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +16,6 @@ public interface EventDao {
     int updateByPrimaryKeySelective(EventDTO record);
 
     int updateByPrimaryKey(EventDTO record);
+
+    List<String> selectTables();
 }

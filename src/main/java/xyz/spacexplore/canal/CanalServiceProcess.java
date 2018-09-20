@@ -1,6 +1,5 @@
 package xyz.spacexplore.canal;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
@@ -17,13 +16,13 @@ public class CanalServiceProcess implements CanalService {
     private CustomCanalClient canalClient;
 
     @Override
-    @PostConstruct
+    // @PostConstruct
     public void initCanalService() {
         canalClient.start();
     }
 
     @Override
-    @PreDestroy
+    // @PreDestroy
     public void destroyCanalService() {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {

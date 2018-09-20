@@ -12,115 +12,115 @@ import com.alibaba.otter.canal.protocol.Message;
 import com.google.common.util.concurrent.ListeningExecutorService;
 
 public class CustomCanalClient {
-	private final static Logger logger = LoggerFactory.getLogger(CustomCanalClient.class);
-	private volatile boolean running = false;
+    private final static Logger logger = LoggerFactory.getLogger(CustomCanalClient.class);
+    private volatile boolean running = false;
 
-	@SuppressWarnings("unused")
-	private Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
-		public void uncaughtException(Thread t, Throwable e) {
-			logger.error("parse canal events has an error", e);
-		}
-	};
-	private CanalConnector connector;
-	private String destination;
-	private CanalServicePublisher canalServicePublisher;
-	private long batchId;
-	private ListeningExecutorService service;
+    @SuppressWarnings("unused")
+    private Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
+        public void uncaughtException(Thread t, Throwable e) {
+            logger.error("parse canal events has an error", e);
+        }
+    };
+    private CanalConnector connector;
+    private String destination;
+    private CanalServicePublisher canalServicePublisher;
+    private long batchId;
+    private ListeningExecutorService service;
 
-	public ListeningExecutorService getService() {
-		return service;
-	}
 
-	public void setService(ListeningExecutorService service) {
-		this.service = service;
-	}
+    public ListeningExecutorService getService() {
+        return service;
+    }
 
-	public CanalServicePublisher getCanalServicePublisher() {
-		return canalServicePublisher;
-	}
+    public void setService(ListeningExecutorService service) {
+        this.service = service;
+    }
 
-	public void setCanalServicePublisher(CanalServicePublisher canalServicePublisher) {
-		this.canalServicePublisher = canalServicePublisher;
-	}
+    public CanalServicePublisher getCanalServicePublisher() {
+        return canalServicePublisher;
+    }
 
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		logger.debug("Autowired applicationContext");
-	}
+    public void setCanalServicePublisher(CanalServicePublisher canalServicePublisher) {
+        this.canalServicePublisher = canalServicePublisher;
+    }
 
-	public CustomCanalClient() {
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        logger.debug("Autowired applicationContext");
+    }
 
-	}
+    public CustomCanalClient() {
 
-	public CustomCanalClient(CanalConnector connector, String destination, CanalServicePublisher canalServicePublisher,
-			ListeningExecutorService service) {
-		super();
-		this.connector = connector;
-		this.destination = destination;
-		this.canalServicePublisher = canalServicePublisher;
-		this.service = service;
-	}
+    }
 
-	public String getDestination() {
-		return destination;
-	}
+    public CustomCanalClient(CanalConnector connector, String destination, CanalServicePublisher canalServicePublisher, ListeningExecutorService service) {
+        super();
+        this.connector = connector;
+        this.destination = destination;
+        this.canalServicePublisher = canalServicePublisher;
+        this.service = service;
+    }
 
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
+    public String getDestination() {
+        return destination;
+    }
 
-	public void start() {
-		Assert.notNull(connector, "connector is null");
-		service.submit(new Runnable() {
-			@Override
-			public void run() {
-				process();
-			}
-		});
-		running = true;
-	}
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
 
-	public void stop() {
-		if (!running && !service.isShutdown()) {
-			return;
-		}
-		running = false;
-		service.shutdown();
-	}
+    public void start() {
+        Assert.notNull(connector, "connector is null");
+        service.submit(new Runnable() {
+            @Override
+            public void run() {
+                process();
+            }
+        });
+        running = true;
+    }
 
-	@SuppressWarnings("static-access")
-	private void process() {
-		while (running) {
-			try {
-				connector.connect();
-				logger.info("cannal 成功链接上了");
-				connector.subscribe("");
-				while (running) {
-					Message message = connector.getWithoutAck(Constants.CanalConf.CANAL_DEFAULT_BATCHSIZE); // 获取指定数量的数据
-					batchId = message.getId();
-					int size = message.getEntries().size();
+    public void stop() {
+        if (!running && !service.isShutdown()) {
+            return;
+        }
+        running = false;
+        service.shutdown();
+    }
 
-					if (batchId == -1 || size == 0) {
-						Thread.currentThread().sleep(1000);
-						continue;
-					} else {
+    @SuppressWarnings("static-access")
+    private void process() {
+        while (running) {
+            try {
+                connector.connect();
+                logger.info("cannal 成功链接上了");
+                connector.subscribe("");
+                while (running) {
+                    Message message = connector.getWithoutAck(Constants.CanalConf.CANAL_DEFAULT_BATCHSIZE); // 获取指定数量的数据
+                    batchId = message.getId();
+                    int size = message.getEntries().size();
 
-						ApplicationEvent event = new CanalMessageEvent(CustomCanalClient.class, message);
-						canalServicePublisher.publishEvent(event);
-					}
+                    if (batchId == -1 || size == 0) {
+                        Thread.currentThread().sleep(1000);
+                        continue;
+                    } else {
 
-					connector.ack(batchId); // 提交确认
-				}
-			} catch (Exception e) {
-				logger.error("process error@CustomCanalClient@process Method", e);
-				connector.rollback(batchId); // 处理失败, 回滚数据
-			} finally {
-				connector.disconnect();
-			}
-		}
-	}
+                        ApplicationEvent event = new CanalMessageEvent(CustomCanalClient.class, message);
+                        canalServicePublisher.publishEvent(event);
+                    }
 
-	public void setConnector(CanalConnector connector) {
-		this.connector = connector;
-	}
+                    connector.ack(batchId); // 提交确认
+                }
+            } catch (Exception e) {
+                logger.error("process error@CustomCanalClient@process Method", e);
+                connector.rollback(batchId); // 处理失败, 回滚数据
+            } finally {
+                connector.disconnect();
+            }
+        }
+    }
+
+    public void setConnector(CanalConnector connector) {
+        this.connector = connector;
+    }
 
 }

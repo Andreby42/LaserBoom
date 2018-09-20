@@ -1,4 +1,4 @@
-package xyz.spacexplore.canal;
+package xyz.spacexplore.support;
 
 import java.lang.reflect.Array;
 

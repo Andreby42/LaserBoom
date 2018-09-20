@@ -1,4 +1,4 @@
-package xyz.spacexplore.domain;
+package xyz.spacexplore.domain.dto;
 
 import java.io.Serializable;
 import java.util.Date;
