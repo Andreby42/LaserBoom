@@ -1,7 +1,8 @@
 package xyz.spacexplore.canal;
 
-import xyz.spacexplore.domain.EventDTO;
-import xyz.spacexplore.domain.LeagueDTO;
+import xyz.spacexplore.domain.dto.EventDTO;
+import xyz.spacexplore.domain.dto.LeagueDTO;
+import xyz.spacexplore.support.MD5;
 
 /**
  * 

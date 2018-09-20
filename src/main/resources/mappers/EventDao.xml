@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="xyz.spacexplore.domain.EventDao" >
-  <resultMap id="BaseResultMap" type="xyz.spacexplore.domain.EventDTO" >
+  <resultMap id="BaseResultMap" type="xyz.spacexplore.domain.dto.EventDTO" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="tournament_stageFK" property="tournamentStagefk" jdbcType="INTEGER" />
@@ -30,7 +30,7 @@
     delete from event
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="xyz.spacexplore.domain.EventDTO" >
+  <insert id="insert" parameterType="xyz.spacexplore.domain.dto.EventDTO" >
     insert into event (id, name, tournament_stageFK, 
       startdate, eventstatusFK, status_type, 
       status_descFK, enetID, enetSportID, 
@@ -42,7 +42,7 @@
       #{n,jdbcType=INTEGER}, #{ut,jdbcType=TIMESTAMP}, #{del,jdbcType=CHAR}, #{locked,jdbcType=CHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="xyz.spacexplore.domain.EventDTO" >
+  <insert id="insertSelective" parameterType="xyz.spacexplore.domain.dto.EventDTO" >
     insert into event
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -127,7 +127,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="xyz.spacexplore.domain.EventDTO" >
+  <update id="updateByPrimaryKeySelective" parameterType="xyz.spacexplore.domain.dto.EventDTO" >
     update event
     <set >
       <if test="name != null" >
@@ -169,7 +169,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="xyz.spacexplore.domain.EventDTO" >
+  <update id="updateByPrimaryKey" parameterType="xyz.spacexplore.domain.dto.EventDTO" >
     update event
     set name = #{name,jdbcType=VARCHAR},
       tournament_stageFK = #{tournamentStagefk,jdbcType=INTEGER},
@@ -185,4 +185,7 @@
       locked = #{locked,jdbcType=CHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectTables" resultType="java.lang.String">
+  	show tables;
+  </select>
 </mapper>

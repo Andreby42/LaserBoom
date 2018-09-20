@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.otter.canal.protocol.CanalEntry.Entry;
 import com.alibaba.otter.canal.protocol.CanalEntry.EntryType;
 import com.alibaba.otter.canal.protocol.CanalEntry.EventType;
@@ -25,7 +24,7 @@ import com.alibaba.otter.canal.protocol.Message;
  */
 @Component("canalMessageListener")
 public class CanalMessageListener {
-
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CanalMessageListener.class);
 
     @Resource
@@ -40,28 +39,16 @@ public class CanalMessageListener {
     }
 
     private void preHandle(Message message) throws Exception {
-        Assert.notNull(message, "message cant be null");
-        logger.info(JSON.toJSONString(message));
         for (Entry entry : message.getEntries()) {
             if (entry.getEntryType() == EntryType.TRANSACTIONBEGIN || entry.getEntryType() == EntryType.TRANSACTIONEND) {
                 continue;
             }
 
             if (entry.getEntryType() == EntryType.ROWDATA) {
-                RowChange rowChage = null;
-                try {
-                    rowChage = RowChange.parseFrom(entry.getStoreValue());
-                } catch (Exception e) {
-                    throw new RuntimeException("parse event has an error @CanalMessageListener@preHandle , data:" + entry.toString(), e);
-                }
-
-                EventType eventType = rowChage.getEventType();
-//                if (eventType == EventType.QUERY || rowChage.getIsDdl()) {
-                    if (eventType == EventType.QUERY ) {
-
+                EventType eventType = RowChange.parseFrom(entry.getStoreValue()).getEventType();
+                if (eventType == EventType.QUERY) {
                     continue;
                 }
-                // byte[] bytesArr = SerializationUtils.serialize(entry);
                 supposeCanalMessageProcess.handleData(entry);
             }
         }

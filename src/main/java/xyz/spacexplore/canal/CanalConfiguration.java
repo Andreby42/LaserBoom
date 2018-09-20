@@ -10,12 +10,15 @@ import java.util.concurrent.Executors;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
+import com.alibaba.otter.canal.kafka.client.KafkaCanalConnector;
+import com.alibaba.otter.canal.kafka.client.KafkaCanalConnectors;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -23,6 +26,20 @@ import com.google.common.util.concurrent.MoreExecutors;
 public class CanalConfiguration extends BaseLogger {
     @Resource
     private Environment env;
+
+    @Value("${kafka.canal.zkservers}")
+    private String zkServers;
+
+    @Value("${kafka.canal.bootstrap.servers}")
+    private String servers;
+
+    @Value("${kafka.canal.topic}")
+    private String topic;
+
+    @Value("${kafka.canal.group.id}")
+    private String groupId;
+
+
 
     @Bean(value = "canalConnector")
     public CanalConnector canalConnector() {
@@ -100,5 +117,22 @@ public class CanalConfiguration extends BaseLogger {
             }
         }
         return list;
+    }
+
+    @Bean
+    public KafkaCanalConnector kafkaCanalConnector() {
+        return KafkaCanalConnectors.newKafkaConnector(zkServers, servers, topic, groupId);
+    }
+
+    @Bean(value = "kafkaCanalClient")
+    public KafkaCanalClient kafkaCanalClient(@Qualifier("kafkaCanalConnector") KafkaCanalConnector kafkaCanalConnector, @Qualifier("canalServicePublisher") CanalServicePublisher canalServicePublisher, @Qualifier("executorService") ExecutorService executorService) {
+        ListeningExecutorService listeningExecutorService = MoreExecutors.listeningDecorator(executorService);
+        KafkaCanalClient canalClient = null;
+        try {
+            canalClient = new KafkaCanalClient(kafkaCanalConnector, canalServicePublisher, listeningExecutorService);
+        } catch (Exception e) {
+            logger.info(e.toString(), "get kafkaCanalClient failed @CanalConfiguration @canalSingleClient");
+        }
+        return canalClient;
     }
 }

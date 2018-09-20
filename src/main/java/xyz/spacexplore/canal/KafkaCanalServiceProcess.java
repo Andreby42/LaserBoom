@@ -1,5 +1,6 @@
 package xyz.spacexplore.canal;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
@@ -8,33 +9,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-@Service("canalService")
-public class CanalServiceProcess implements CanalService {
+@Service("kafkaCanalServiceProcess")
+public class KafkaCanalServiceProcess implements CanalService {
     private static final Logger logger = LoggerFactory.getLogger(CanalServiceProcess.class);
 
     @Resource
-    private CustomCanalClient canalClient;
+    private KafkaCanalClient kafkaCanalClient;
 
     @Override
-    // @PostConstruct
+    @PostConstruct
     public void initCanalService() {
-        canalClient.start();
+        kafkaCanalClient.start();
     }
 
     @Override
-    // @PreDestroy
+    @PreDestroy
     public void destroyCanalService() {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 try {
-                    logger.info("## stop the canal client");
-                    canalClient.stop();
+                    logger.info("## stop the kafkacanal client");
+                    kafkaCanalClient.stop();
                     System.out.println("canal client is stopping");
                 } catch (Throwable e) {
-                    logger.warn("##something goes wrong when stopping canal:\n{}", ExceptionUtils.getFullStackTrace(e));
+                    logger.warn("##something goes wrong when stopping kafkacanal:\n{}", ExceptionUtils.getFullStackTrace(e));
                 } finally {
-                    logger.info("## canal client is down.");
-                    System.out.println("canal client is down");
+                    logger.info("## kafkacanal client is down.");
+                    System.out.println("kafkacanal client is down");
                 }
             }
         });
