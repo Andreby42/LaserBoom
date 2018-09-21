@@ -1,8 +1,5 @@
 package xyz.spacexplore.canal;
 
-import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +9,9 @@ import org.springframework.stereotype.Service;
 public class CanalServiceProcess implements CanalService {
     private static final Logger logger = LoggerFactory.getLogger(CanalServiceProcess.class);
 
-    @Resource
+    // @Resource
     private CustomCanalClient canalClient;
+
 
     @Override
     // @PostConstruct
