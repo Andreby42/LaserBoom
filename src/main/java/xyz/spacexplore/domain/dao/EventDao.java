@@ -1,10 +1,11 @@
-package xyz.spacexplore.domain;
+package xyz.spacexplore.domain.dao;
 
 import java.util.List;
 
+import xyz.spacexplore.domain.CustomDao;
 import xyz.spacexplore.domain.dto.EventDTO;
 
-public interface EventDao {
+public interface EventDao extends CustomDao{
     int deleteByPrimaryKey(Integer id);
 
     int insert(EventDTO record);

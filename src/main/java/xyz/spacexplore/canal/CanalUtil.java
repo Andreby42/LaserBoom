@@ -16,6 +16,7 @@ import com.sun.org.apache.xml.internal.security.Init;
 
 import xyz.spacexplore.domain.dto.EventDTO;
 import xyz.spacexplore.domain.dto.LeagueDTO;
+import xyz.spacexplore.support.DateUtil;
 import xyz.spacexplore.support.MD5;
 
 /**
@@ -39,7 +40,7 @@ public class CanalUtil {
         Map<String, String> map = new HashMap<String, String>();
         for (Column column : columns) {
             String column_value = column.getValue();
-            String column_name = getColumnName(column.getName());
+            String column_name = getColumnName(column.getName(), false);
             map.put(column_name, column_value);
         }
         return map;
@@ -47,20 +48,25 @@ public class CanalUtil {
 
     /**
      * 
-     * @doc:解析数据库字段为驼峰式实体类字段 只用在没有指定的实体类上,
+     * @doc:将带下划线的表名转为驼峰式 解析数据库字段为驼峰式实体类字段 只用在没有指定的实体类上,
      * @author Andreby
-     * @date 2017年4月18日 下午6:52:22
-     * @param name 推送过来的字段名称
+     * @date 2018年9月21日 上午10:59:42
+     * @param name 表名
+     * @param firstUpper 是否首字母大写
      * @return
      */
     @Deprecated
-    public static String getColumnName(String name) {
+    public static String getColumnName(String name, boolean firstUpper) {
         // 先转换为实体类驼峰式
-        // PRODUCT_ID
         char[] charArray = name.toCharArray();
         List<Integer> indexList = new ArrayList<>();
         int indexs = 0;
         for (char c : charArray) {
+            if (firstUpper) {
+                if (indexs == 0) {
+                    indexList.add(indexs);
+                }
+            }
             if (c == '_') {
                 indexList.add(indexs + 1);
             }
@@ -95,10 +101,12 @@ public class CanalUtil {
             String value = entry.getValue();
             obj = transferValues(key, value, obj, tableName);
         }
-        //TODO:对单另的需要进行主键设置的进行特殊处理
-       /* if (tableName.equals("league")) {
-
-        }*/
+        // TODO:对单另的需要进行主键设置的进行特殊处理
+        /*
+         * if (tableName.equals("league")) {
+         * 
+         * }
+         */
         return JSON.toJSONString(obj);
 
     }
@@ -185,7 +193,7 @@ public class CanalUtil {
     public static String getPrimaryKeyName(List<Column> columns) {
         for (Column column : columns) {
             if (column.getIsKey()) {
-                return getColumnName(column.getName());
+                return getColumnName(column.getName(), false);
             }
         }
         return null;
@@ -200,13 +208,16 @@ public class CanalUtil {
      * @param args
      */
     public static void main(String[] args) {
-        String columnName = getColumnName("event");
+        String columnName = getColumnName("event_sss", false);
         System.out.println(columnName);
         String className = EventDTO.class.getName();
         System.out.println(className);
         String simpleName = EventDTO.class.getSimpleName();
         System.out.println(simpleName);
+    }
 
-
+    @SuppressWarnings("unchecked")
+    public static <T> T getBean(T t, Class<?> claz) throws InstantiationException, IllegalAccessException {
+        return (T) claz.newInstance();
     }
 }
