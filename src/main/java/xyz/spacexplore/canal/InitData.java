@@ -3,26 +3,28 @@ package xyz.spacexplore.canal;
 import java.io.File;
 import java.io.FileFilter;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
+import xyz.spacexplore.domain.CustomDao;
 import xyz.spacexplore.domain.dao.EventDao;
 import xyz.spacexplore.domain.dao.LeagueDao;
 import xyz.spacexplore.support.ApplicationContextUtil;
 
 @Component
-public class InitData {
+public class InitData implements InitializingBean {
     @Resource
     private EventDao eventDao;
     @Resource
     private LeagueDao leagueDao;
+    @Resource
+    private ApplicationContextUtil applicationContextUtil;
 
     private static final String DTO_PACKAGE = "xyz.spacexplore.domain.dto";
     private static final String DAO_PACKAGE = "xyz.spacexplore.domain.dao";
@@ -32,7 +34,7 @@ public class InitData {
 
     public static final Map<String, Class<?>> tableClassMap = new HashMap<>();
 
-    public static final Map<String, Class<?>> tableDaoMap = new HashMap<>();
+    public static final Map<String, CustomDao> tableDaoMap = new HashMap<>();
 
     private static final String DTO_SUFFIX = "DTO";
     private static final String DAO_SUFFIX = "Dao";
@@ -43,7 +45,6 @@ public class InitData {
      * @doc:思路是这样的,首先加载所有的表名称,然后扫描指定包下的class文件 ,根据表名和class.simplename进行匹配,如果匹配成功,那么就进行组装map(table,
      *                                         class)
      **/
-    @PostConstruct
     public void initData() throws ClassNotFoundException {
         initClass();
         initTableAndDaoClazes();
@@ -51,20 +52,22 @@ public class InitData {
 
     private void initTableAndDaoClazes() throws ClassNotFoundException {
         List<String> tables = eventDao.selectTables();
-        File[] resources = getResources(DAO_PACKAGE);// 获取到包下所有的class文件
+        File[] resources = getResources(DAO_PACKAGE);
+        if (tables.size() < resources.length) {
+            throw new RuntimeException("项目配置错误");
+        }
         for (int i = 0; i < resources.length; i++) {
             // 载入包下的类
             Class<?> clazz = classLoader.loadClass(DAO_PACKAGE + "." + resources[i].getName().replace(".class", ""));
-            // 判断满足的话加入到策略列表
-            switch (clazz.getSimpleName().replace(DAO_SUFFIX, "").toLowerCase()) {
-                case value:
-                    
-                    break;
+            String tableName = clazz.getSimpleName().replace(DAO_SUFFIX, "").toLowerCase();
+            // 判断满足 加入到策略列表
 
-                default:
-                    break;
+            long count = tables.stream().filter(str -> str.equalsIgnoreCase(tableName)).count();
+            if (count > 0) {
+                // 拿到对象 放map 从spring中
+                CustomDao bean = (CustomDao) applicationContextUtil.getBean(tableName + DAO_SUFFIX);
+                tableDaoMap.put(tableName, bean);
             }
-            tableDaoMap.put(clazz.getSimpleName().replace(DAO_SUFFIX, "").toLowerCase(), clazz);// 获得小写类名:class
         }
     }
 
@@ -101,6 +104,11 @@ public class InitData {
         } catch (URISyntaxException e) {
             throw new RuntimeException("未找到策略资源");
         }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initData();
     }
 
 

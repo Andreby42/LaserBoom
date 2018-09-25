@@ -1,7 +1,5 @@
 package xyz.spacexplore.canal;
 
-import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -9,16 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.otter.canal.protocol.CanalEntry.Column;
 import com.alibaba.otter.canal.protocol.CanalEntry.Entry;
 import com.alibaba.otter.canal.protocol.CanalEntry.EventType;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowChange;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowData;
-import com.google.protobuf.InvalidProtocolBufferException;
 
-import xyz.spacexplore.domain.dao.EventDao;
-import xyz.spacexplore.support.ApplicationContextUtil;
+import xyz.spacexplore.domain.CustomDao;
 
 /**
  * 
@@ -72,36 +67,51 @@ public class SupposeCanalMessageProcess implements CanalMessageProcess {
         List<RowData> rowDatasList = RowChange.parseFrom(entry.getStoreValue()).getRowDatasList();
 
 
+        try {
+            for (RowData rowData : rowDatasList) {
+                if (eventType.equals(EventType.DELETE)) {
+                    pk = CanalUtil.getPrimaryKeyName(rowData.getBeforeColumnsList());
+                    List<Column> columns = rowData.getBeforeColumnsList();
+                    Map<String, String> columnToMap = CanalUtil.columnToMap(columns);
+                    String key = columnToMap.get(pk);
+                    String daoName = CanalUtil.getColumnName(tableName, false);
+                    CustomDao customDao = InitData.tableDaoMap.get(daoName);
+                    customDao.deleteByPrimaryKey(Integer.valueOf(key));
 
-        for (RowData rowData : rowDatasList) {
-            if (eventType == EventType.DELETE) {
-                pk = CanalUtil.getPrimaryKeyName(rowData.getBeforeColumnsList());
-                List<Column> columns = rowData.getBeforeColumnsList();
-                Map<String, String> columnToMap = CanalUtil.columnToMap(columns);
-                String key = columnToMap.get(pk);
-                String daoName = CanalUtil.getColumnName(tableName, false);
-                Class<?> classz = InitData.tableDaoMap.get(daoName);
-                Object bean = CanalUtil.getBean(classz.newInstance(),classz);
-            } else {
-                /*
-                 * pk = CanalUtil.getPrimaryKeyName(rowData.getAfterColumnsList()); List<Column>
-                 * columns = rowData.getAfterColumnsList(); Map<String, String> columnToMap =
-                 * CanalUtil.columnToMap(columns);
-                 * 
-                 * String jsonData = null; try { // jsonData =
-                 * CanalUtil.parseColumnMapToDTO(columnToMap, // entry.getHeader().getTableName());
-                 * } catch (Exception e) { logger.error(e.toString(),
-                 * "[parse map to Obj Json failed@CanalMessageHandlerImpl@doHandler]"); } String key
-                 * = columnToMap.get(pk);
-                 * 
-                 * System.out.println(Thread.currentThread().getName() + "--" +
-                 * Thread.currentThread().getId() + "---" + DateUtil.getTime(new Date()) + "---" +
-                 * jsonData); logger.info(eventType + "操作,@" + entry.getHeader().getSchemaName() +
-                 * "@" + entry.getHeader().getTableName() + "@RedisDbUniKey::" + key); String
-                 * row_data = header_str + row_str + "\"before\":" + dataBefore + ",\"after\":" +
-                 * dataAfter + ",\"time\":\"" + DateUtil.getTime() + "\"}"; logger.info(row_data);
-                 */
+                } else {
+                    if (eventType.equals(EventType.INSERT)) {
+                            
+                    }
+                    if (eventType.equals(EventType.UPDATE)) {
+
+                    }
+
+
+
+                    /*
+                     * pk = CanalUtil.getPrimaryKeyName(rowData.getAfterColumnsList()); List<Column>
+                     * columns = rowData.getAfterColumnsList(); Map<String, String> columnToMap =
+                     * CanalUtil.columnToMap(columns);
+                     * 
+                     * String jsonData = null; try { // jsonData =
+                     * CanalUtil.parseColumnMapToDTO(columnToMap, //
+                     * entry.getHeader().getTableName()); } catch (Exception e) {
+                     * logger.error(e.toString(),
+                     * "[parse map to Obj Json failed@CanalMessageHandlerImpl@doHandler]"); } String
+                     * key = columnToMap.get(pk);
+                     * 
+                     * System.out.println(Thread.currentThread().getName() + "--" +
+                     * Thread.currentThread().getId() + "---" + DateUtil.getTime(new Date()) + "---"
+                     * + jsonData); logger.info(eventType + "操作,@" +
+                     * entry.getHeader().getSchemaName() + "@" + entry.getHeader().getTableName() +
+                     * "@RedisDbUniKey::" + key); String row_data = header_str + row_str +
+                     * "\"before\":" + dataBefore + ",\"after\":" + dataAfter + ",\"time\":\"" +
+                     * DateUtil.getTime() + "\"}"; logger.info(row_data);
+                     */
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -26,7 +26,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 public class CanalConfiguration extends BaseLogger {
     @Resource
     private Environment env;
-
     @Value("${kafka.canal.zkservers}")
     private String zkServers;
 

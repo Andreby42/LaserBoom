@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xyz.spacexplore.domain.dao.LeagueDao" >
+  <resultMap id="BaseResultMap" type="xyz.spacexplore.domain.dto.LeagueDTO" >
+    <id column="lid" property="lid" jdbcType="INTEGER" />
+    <result column="cn" property="cn" jdbcType="VARCHAR" />
+    <result column="color" property="color" jdbcType="VARCHAR" />
+    <result column="en" property="en" jdbcType="VARCHAR" />
+    <result column="gbk" property="gbk" jdbcType="VARCHAR" />
+    <result column="cnshort" property="cnshort" jdbcType="VARCHAR" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="kind" property="kind" jdbcType="INTEGER" />
+    <result column="gbkshort" property="gbkshort" jdbcType="VARCHAR" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="setdate" property="setdate" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="flag" property="flag" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    lid, cn, color, en, gbk, cnshort, cid, kind, gbkshort, icon, status, setdate, remark, 
+    flag
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from league
+    where lid = #{lid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from league
+    where lid = #{lid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="xyz.spacexplore.domain.dto.LeagueDTO" >
+    insert into league (lid, cn, color, 
+      en, gbk, cnshort, cid, 
+      kind, gbkshort, icon, 
+      status, setdate, remark, 
+      flag)
+    values (#{lid,jdbcType=INTEGER}, #{cn,jdbcType=VARCHAR}, #{color,jdbcType=VARCHAR}, 
+      #{en,jdbcType=VARCHAR}, #{gbk,jdbcType=VARCHAR}, #{cnshort,jdbcType=VARCHAR}, #{cid,jdbcType=INTEGER}, 
+      #{kind,jdbcType=INTEGER}, #{gbkshort,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{setdate,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
+      #{flag,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="xyz.spacexplore.domain.dto.LeagueDTO" >
+    insert into league
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="lid != null" >
+        lid,
+      </if>
+      <if test="cn != null" >
+        cn,
+      </if>
+      <if test="color != null" >
+        color,
+      </if>
+      <if test="en != null" >
+        en,
+      </if>
+      <if test="gbk != null" >
+        gbk,
+      </if>
+      <if test="cnshort != null" >
+        cnshort,
+      </if>
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="kind != null" >
+        kind,
+      </if>
+      <if test="gbkshort != null" >
+        gbkshort,
+      </if>
+      <if test="icon != null" >
+        icon,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="setdate != null" >
+        setdate,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="flag != null" >
+        flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="lid != null" >
+        #{lid,jdbcType=INTEGER},
+      </if>
+      <if test="cn != null" >
+        #{cn,jdbcType=VARCHAR},
+      </if>
+      <if test="color != null" >
+        #{color,jdbcType=VARCHAR},
+      </if>
+      <if test="en != null" >
+        #{en,jdbcType=VARCHAR},
+      </if>
+      <if test="gbk != null" >
+        #{gbk,jdbcType=VARCHAR},
+      </if>
+      <if test="cnshort != null" >
+        #{cnshort,jdbcType=VARCHAR},
+      </if>
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="kind != null" >
+        #{kind,jdbcType=INTEGER},
+      </if>
+      <if test="gbkshort != null" >
+        #{gbkshort,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="setdate != null" >
+        #{setdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null" >
+        #{flag,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="xyz.spacexplore.domain.dto.LeagueDTO" >
+    update league
+    <set >
+      <if test="cn != null" >
+        cn = #{cn,jdbcType=VARCHAR},
+      </if>
+      <if test="color != null" >
+        color = #{color,jdbcType=VARCHAR},
+      </if>
+      <if test="en != null" >
+        en = #{en,jdbcType=VARCHAR},
+      </if>
+      <if test="gbk != null" >
+        gbk = #{gbk,jdbcType=VARCHAR},
+      </if>
+      <if test="cnshort != null" >
+        cnshort = #{cnshort,jdbcType=VARCHAR},
+      </if>
+      <if test="cid != null" >
+        cid = #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="kind != null" >
+        kind = #{kind,jdbcType=INTEGER},
+      </if>
+      <if test="gbkshort != null" >
+        gbkshort = #{gbkshort,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="setdate != null" >
+        setdate = #{setdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null" >
+        flag = #{flag,jdbcType=INTEGER},
+      </if>
+    </set>
+    where lid = #{lid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="xyz.spacexplore.domain.dto.LeagueDTO" >
+    update league
+    set cn = #{cn,jdbcType=VARCHAR},
+      color = #{color,jdbcType=VARCHAR},
+      en = #{en,jdbcType=VARCHAR},
+      gbk = #{gbk,jdbcType=VARCHAR},
+      cnshort = #{cnshort,jdbcType=VARCHAR},
+      cid = #{cid,jdbcType=INTEGER},
+      kind = #{kind,jdbcType=INTEGER},
+      gbkshort = #{gbkshort,jdbcType=VARCHAR},
+      icon = #{icon,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      setdate = #{setdate,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR},
+      flag = #{flag,jdbcType=INTEGER}
+    where lid = #{lid,jdbcType=INTEGER}
+  </update>
+</mapper>

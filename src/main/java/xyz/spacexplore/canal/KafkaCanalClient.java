@@ -88,7 +88,7 @@ public class KafkaCanalClient {
                             Thread.currentThread().sleep(1000);
                             continue; 
                         } else {
-                            ApplicationEvent event = new CanalMessageEvent(CustomCanalClient.class, message);
+                            ApplicationEvent event = new CanalMessageEvent(KafkaCanalClient.class, message);
                             canalServicePublisher.publishEvent(event);
                         }
                         kafkaCanalConnector.ack();

@@ -55,7 +55,6 @@ public class CanalUtil {
      * @param firstUpper 是否首字母大写
      * @return
      */
-    @Deprecated
     public static String getColumnName(String name, boolean firstUpper) {
         // 先转换为实体类驼峰式
         char[] charArray = name.toCharArray();
